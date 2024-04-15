@@ -1,4 +1,4 @@
-name: Sqruff Lint Workflow
+name: Sqruff Lint
 
 on:
   push:
@@ -9,17 +9,21 @@ on:
       - main
 
 jobs:
-  lint:
+  install-and-lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout target repository code
         uses: actions/checkout@v3
 
-      - name: Download sqruff
-        run: |
-          curl -L https://github.com/quarylabs/sqruff/releases/download/v0.0.14/sqruff-linux-x86_64-musl.tar.gz -o sqruff.tar.gz
-          tar -xzvf sqruff.tar.gz
+      - name: Set up Rust (nightly)
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          profile: minimal
+          override: true
 
-      - name: Execute sqruff lint
-        run: |
-          ./sqruff lint
+      - name: Install sqruff from GitHub
+        run: cargo +nightly install --git https://github.com/gvozdvmozgu/sqruff.git --branch github-annotation-native
+
+      - name: Run sqruff lint
+        run: $HOME/.cargo/bin/sqruff lint --format github-annotation-native
