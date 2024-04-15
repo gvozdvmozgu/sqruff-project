@@ -1,0 +1,25 @@
+name: Sqruff Lint Workflow
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download sqruff
+        run: |
+          curl -L https://github.com/quarylabs/sqruff/releases/download/v0.0.14/sqruff-linux-x86_64-musl.tar.gz -o sqruff.tar.gz
+          tar -xzvf sqruff.tar.gz
+
+      - name: Execute sqruff lint
+        run: |
+          ./sqruff lint
